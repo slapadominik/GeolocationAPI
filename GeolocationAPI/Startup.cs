@@ -5,6 +5,8 @@ using GeolocationAPI.Persistence.Repositories;
 using GeolocationAPI.Persistence.Repositories.Interfaces;
 using GeolocationAPI.Services;
 using GeolocationAPI.Services.Interfaces;
+using GeolocationAPI.Validators;
+using GeolocationAPI.Validators.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +34,7 @@ namespace GeolocationAPI
             services.AddTransient<IGeolocationService, GeolocationService>();
             services.AddTransient<IGeolocationDataRepository, GeolocationDataRepository>();
             services.AddTransient<IGeolocationDataConverter, GeolocationDataConverter>();
+            services.AddTransient<IIpAddressValidator, IpAddressValidator>();
             services.AddDbContext<ApplicationDbContext>(x =>
                 x.UseSqlite(Configuration.GetConnectionString("GeolocationDataDb")));
             services.AddSwaggerGen(c =>

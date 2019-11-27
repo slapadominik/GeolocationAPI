@@ -2,7 +2,9 @@
 using System.Threading.Tasks;
 using GeolocationAPI.DTO;
 using GeolocationAPI.Exceptions;
+using GeolocationAPI.Persistence.Entities;
 using GeolocationAPI.Services.Interfaces;
+using GeolocationAPI.Validators.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -15,47 +17,68 @@ namespace GeolocationAPI.Controllers
 
         private readonly IGeolocationDataService _geolocationDataService;
         private readonly IGeolocationService _geolocationService;
-        public GeolocationController(IGeolocationDataService geolocationDataService, IGeolocationService geolocationService)
+        private readonly IIpAddressValidator _ipAddressValidator;
+
+        public GeolocationController(IGeolocationDataService geolocationDataService, IGeolocationService geolocationService, IIpAddressValidator ipAddressValidator)
         {
             _geolocationDataService = geolocationDataService;
             _geolocationService = geolocationService;
+            _ipAddressValidator = ipAddressValidator;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public async Task<ActionResult<IEnumerable<GeolocationData>>> GetAll()
         {
-            return new string[] { "value1", "value2" };
+            return Ok(await _geolocationService.GetAllAsync());
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        [HttpGet("{ipAddress}")]
+        public async Task<ActionResult<GeolocationData>> Get(string ipAddress)
         {
-            return "value";
+            if (!_ipAddressValidator.IsValid(ipAddress))
+            {
+                return BadRequest($"Invalid IpAddress format: {ipAddress}.");
+            }
+            var geolocationData = await _geolocationService.GetAsync(ipAddress);
+            if (geolocationData == null)
+            {
+                return NotFound($"Not found geolocation data for IpAddress {ipAddress}");
+            }
+            return Ok(geolocationData);
         }
 
         [HttpPost]
-        public async Task<ActionResult<string>> AddGeolocationDataByIpAddress([FromBody] IpAddress ipAddress)
+        public async Task<ActionResult<GeolocationData>> AddGeolocationDataByIpAddress([FromBody] IpAddress ipAddress)
         {
             try
             {
-                var geolocationData = await _geolocationDataService.GetByIpAddressAsync(ipAddress.Value);
-                var id = await _geolocationService.AddGeolocationDataAsync(geolocationData);
-                return CreatedAtAction(nameof(Get),new {id}, geolocationData);
+                if (!_ipAddressValidator.IsValid(ipAddress.Value))
+                {
+                    return BadRequest($"Invalid IpAddress format: {ipAddress.Value}.");
+                }
+                var remoteGeolocationData = await _geolocationDataService.GetByIpAddressAsync(ipAddress.Value);
+                var localGeolocationData = await _geolocationService.AddAsync(remoteGeolocationData);
+                return CreatedAtAction(nameof(Get), new {localGeolocationData.IpAddress}, localGeolocationData);
             }
             catch (RemoteApiException ex)
             {
                 return StatusCode(503);
             }
+            catch (EntityDuplicateException ex)
+            {
+                return Conflict(ex.Message);
+            }
         }
 
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpDelete("{ipAddress}")]
+        public async Task<ActionResult> Delete(string ipAddress)
         {
-        }
-
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            if (!_ipAddressValidator.IsValid(ipAddress))
+            {
+                return BadRequest($"Invalid IpAddress format: {ipAddress}.");
+            }
+            await _geolocationService.DeleteAsync(ipAddress);
+            return Ok();
         }
     }
 }

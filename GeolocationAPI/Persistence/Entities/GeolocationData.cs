@@ -5,7 +5,7 @@ namespace GeolocationAPI.Persistence.Entities
 {
     public class GeolocationData
     {
-        public Guid Id { get; set; }
+        [Key]
         public string IpAddress { get; set; }
         public string IpAddressType { get; set; }
         [MinLength(2)]

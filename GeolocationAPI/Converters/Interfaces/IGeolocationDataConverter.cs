@@ -6,6 +6,6 @@ namespace GeolocationAPI.Converters.Interfaces
 {
     public interface IGeolocationDataConverter
     {
-        GeolocationData Convert(Guid id, RemoteGeolocationData remoteGeolocationData);
+        GeolocationData Convert(RemoteGeolocationData remoteGeolocationData);
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace GeolocationAPI.Persistence.Migrations
 {
@@ -11,8 +10,7 @@ namespace GeolocationAPI.Persistence.Migrations
                 name: "GeolocationData",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    IpAddress = table.Column<string>(nullable: true),
+                    IpAddress = table.Column<string>(nullable: false),
                     IpAddressType = table.Column<string>(nullable: true),
                     ContinentCode = table.Column<string>(maxLength: 2, nullable: true),
                     ContinentName = table.Column<string>(nullable: true),
@@ -27,7 +25,7 @@ namespace GeolocationAPI.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GeolocationData", x => x.Id);
+                    table.PrimaryKey("PK_GeolocationData", x => x.IpAddress);
                 });
         }
 

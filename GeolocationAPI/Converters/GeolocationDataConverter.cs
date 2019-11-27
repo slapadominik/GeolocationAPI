@@ -16,11 +16,9 @@ namespace GeolocationAPI.Converters
             _mapper = mapperConfig.CreateMapper();
         }
 
-        public GeolocationData Convert(Guid id, RemoteGeolocationData remoteGeolocationData)
+        public GeolocationData Convert(RemoteGeolocationData remoteGeolocationData)
         {
-            var geoDataEntity = _mapper.Map<GeolocationData>(remoteGeolocationData);
-            geoDataEntity.Id = id;
-            return geoDataEntity;
+            return _mapper.Map<GeolocationData>(remoteGeolocationData);
         }
     }
 }
