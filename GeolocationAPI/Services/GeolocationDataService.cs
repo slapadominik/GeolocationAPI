@@ -30,7 +30,9 @@ namespace GeolocationAPI.Services
             {
                 throw new RemoteApiException(response.ErrorMessage, response.ErrorException);
             }
-            if (response.ContentLength < 0)
+            if (response.Data.City == null 
+                || response.Data.CountryCode == null 
+                || response.Data.ZipCode == null)
             {
                 return null;
             }

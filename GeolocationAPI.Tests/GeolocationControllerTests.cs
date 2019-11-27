@@ -184,10 +184,34 @@ namespace GeolocationAPI.Tests
         }
 
         [Test]
+        public async Task Post_WhenValidIpAddressAndGeolocationDataNotFound_ShouldReturnBadRequest()
+        {
+            //Arrange
+            string ipAddress = "80.80.80.82";
+            _geolocationDataServiceMock.Setup(x => x.GetByIpAddressAsync(It.IsAny<string>())).ReturnsAsync((RemoteGeolocationData) null);
+            var client = _factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                    services.AddSingleton(_geolocationDataServiceMock.Object);
+                });
+            }).CreateClient();
+
+            //Act
+            var stringContent = new StringContent(JsonConvert.SerializeObject(new IpAddress { Value = ipAddress }), Encoding.UTF8, "application/json");
+            var result = await client.PostAsync($"/api/geolocation", stringContent);
+
+            //Assert
+            await result.Content.ReadAsStringAsync();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Content.Headers.ContentType.MediaType.Should().Be("text/plain");
+        }
+
+        [Test]
         public async Task Delete_GivenValidIpAddress_ShouldReturnOk()
         {
             //Arrange
-            string ipAddress = "80.80.80.80";
+            string ipAddress = "80.80.80.85";
 
             //Act
             var result = await _httpClient.DeleteAsync($"/api/geolocation/{ipAddress}");

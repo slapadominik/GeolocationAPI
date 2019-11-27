@@ -39,7 +39,17 @@ namespace GeolocationAPI
                 x.UseSqlite(Configuration.GetConnectionString("GeolocationDataDb")));
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "GeolocationAPI", Version = "v1" });
+                c.SwaggerDoc("v1", new Info
+                {
+                    Title = "GeolocationAPI",
+                    Version = "v1",
+                    Contact = new Contact
+                    {
+                        Email = "dominik.slapa@gmail.com",
+                        Name = "Dominik Słapa"
+                    },
+                    Description = "REST API which enables storing geolocation data based on IPv4 address."
+                });
             });
         }
 
@@ -55,14 +65,11 @@ namespace GeolocationAPI
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
             app.UseSwagger();
-
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "GeolocationAPI V1");
             });
-
             app.UseHttpsRedirection();
             app.UseMvc();
         }
