@@ -25,12 +25,16 @@ namespace GeolocationAPI.Services
             var request = new RestRequest("{ipAddress}", Method.GET);
             request.AddUrlSegment("ipAddress", ipAddress);
             request.AddParameter("access_key", _configuration.GetSection("ApiKeys")["IpStack"]);
-            var geolocationData = await _restClient.ExecuteGetTaskAsync<RemoteGeolocationData>(request);
-            if (!geolocationData.IsSuccessful)
+            var response = await _restClient.ExecuteGetTaskAsync<RemoteGeolocationData>(request);
+            if (!response.IsSuccessful)
             {
-                throw new RemoteApiException(geolocationData.ErrorMessage, geolocationData.ErrorException);
+                throw new RemoteApiException(response.ErrorMessage, response.ErrorException);
             }
-            return geolocationData.Data;
+            if (response.ContentLength < 0)
+            {
+                return null;
+            }
+            return response.Data;
         }
     }
 }

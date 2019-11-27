@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using GeolocationAPI.DTO;
 using GeolocationAPI.Exceptions;
@@ -48,7 +49,7 @@ namespace GeolocationAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<GeolocationData>> AddGeolocationDataByIpAddress([FromBody] IpAddress ipAddress)
+        public async Task<ActionResult<GeolocationData>> Add([FromBody] IpAddress ipAddress)
         {
             try
             {
@@ -57,12 +58,16 @@ namespace GeolocationAPI.Controllers
                     return BadRequest($"Invalid IpAddress format: {ipAddress.Value}.");
                 }
                 var remoteGeolocationData = await _geolocationDataService.GetByIpAddressAsync(ipAddress.Value);
+                if (remoteGeolocationData == null)
+                {
+                    return BadRequest($"Not found geolocation data for IpAddress {ipAddress.Value}");
+                }
                 var localGeolocationData = await _geolocationService.AddAsync(remoteGeolocationData);
                 return CreatedAtAction(nameof(Get), new {localGeolocationData.IpAddress}, localGeolocationData);
             }
             catch (RemoteApiException ex)
             {
-                return StatusCode(503);
+                return StatusCode((int) HttpStatusCode.ServiceUnavailable, ex.Message);
             }
             catch (EntityDuplicateException ex)
             {
