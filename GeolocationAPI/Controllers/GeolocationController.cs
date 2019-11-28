@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using GeolocationAPI.DTO;
@@ -20,7 +21,10 @@ namespace GeolocationAPI.Controllers
         private readonly IGeolocationService _geolocationService;
         private readonly IIpAddressValidator _ipAddressValidator;
 
-        public GeolocationController(IGeolocationDataService geolocationDataService, IGeolocationService geolocationService, IIpAddressValidator ipAddressValidator)
+        public GeolocationController(
+            IGeolocationDataService geolocationDataService,
+            IGeolocationService geolocationService, 
+            IIpAddressValidator ipAddressValidator)
         {
             _geolocationDataService = geolocationDataService;
             _geolocationService = geolocationService;
