@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using GeolocationAPI.Controllers;
 using GeolocationAPI.DTO;
-using GeolocationAPI.DTO.Remote;
 using GeolocationAPI.Exceptions;
 using GeolocationAPI.Services.Interfaces;
 using Microsoft.Extensions.Configuration;

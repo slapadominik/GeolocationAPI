@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using GeolocationAPI.DTO;
-using GeolocationAPI.DTO.Remote;
 using GeolocationAPI.Persistence.Entities;
 using GeolocationAPI.Services.Interfaces;
 using Microsoft.AspNetCore.TestHost;
@@ -76,7 +75,7 @@ namespace GeolocationAPI.Tests
         {
             //Arrange
             string ipAddress = "80.80.80.80";
-            var expectedResult = new GeolocationData
+            var expectedResult = new GeolocationDataResource
             {
                 IpAddress = ipAddress,
                 City = "Warszawa",
@@ -116,17 +115,6 @@ namespace GeolocationAPI.Tests
                 CountryName = "Poland",
                 IpAddressType = "ipv4"
             };
-            var expectedResult = new GeolocationData
-            {
-                IpAddress = ipAddress,
-                City = "Warszawa",
-                ContinentCode = "EU",
-                CountryCode = "PL",
-                Latitude = 52.234,
-                Longitude = 21.12,
-                CountryName = "Poland",
-                IpAddressType = "ipv4"
-            };
             _geolocationDataServiceMock.Setup(x => x.GetByIpAddressAsync(It.IsAny<string>())).ReturnsAsync(remoteGeolocationData);
             var client = _factory.WithWebHostBuilder(builder =>
             {
@@ -145,7 +133,7 @@ namespace GeolocationAPI.Tests
             result.StatusCode.Should().Be(HttpStatusCode.Created);
             result.Content.Headers.ContentType.MediaType.Should().Be("application/json");
             geolocationData.Should().NotBeNull();
-            geolocationData.Should().BeEquivalentTo(expectedResult);
+            geolocationData.Should().BeEquivalentTo(remoteGeolocationData);
         }
 
         [Test]

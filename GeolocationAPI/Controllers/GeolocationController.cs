@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using GeolocationAPI.Converters.Interfaces;
 using GeolocationAPI.DTO;
 using GeolocationAPI.Exceptions;
-using GeolocationAPI.Persistence.Entities;
 using GeolocationAPI.Services.Interfaces;
 using GeolocationAPI.Validators.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -19,26 +20,29 @@ namespace GeolocationAPI.Controllers
 
         private readonly IGeolocationDataService _geolocationDataService;
         private readonly IGeolocationService _geolocationService;
+        private readonly IGeolocationDataConverter _geolocationDataConverter;
         private readonly IIpAddressValidator _ipAddressValidator;
 
         public GeolocationController(
             IGeolocationDataService geolocationDataService,
             IGeolocationService geolocationService, 
-            IIpAddressValidator ipAddressValidator)
+            IIpAddressValidator ipAddressValidator, 
+            IGeolocationDataConverter geolocationDataConverter)
         {
             _geolocationDataService = geolocationDataService;
             _geolocationService = geolocationService;
             _ipAddressValidator = ipAddressValidator;
+            _geolocationDataConverter = geolocationDataConverter;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GeolocationData>>> GetAll()
+        public async Task<ActionResult<IEnumerable<GeolocationDataResource>>> GetAll()
         {
-            return Ok(await _geolocationService.GetAllAsync());
+            return Ok((await _geolocationService.GetAllAsync()).Select(x => _geolocationDataConverter.Convert(x)));
         }
 
         [HttpGet("{ipAddress}")]
-        public async Task<ActionResult<GeolocationData>> Get(string ipAddress)
+        public async Task<ActionResult<GeolocationDataResource>> Get(string ipAddress)
         {
             if (!_ipAddressValidator.IsValid(ipAddress))
             {
@@ -49,11 +53,11 @@ namespace GeolocationAPI.Controllers
             {
                 return NotFound($"Not found geolocation data for IpAddress {ipAddress}");
             }
-            return Ok(geolocationData);
+            return Ok(_geolocationDataConverter.Convert(geolocationData));
         }
 
         [HttpPost]
-        public async Task<ActionResult<GeolocationData>> Add([FromBody] IpAddress ipAddress)
+        public async Task<ActionResult<GeolocationDataResource>> Add([FromBody] IpAddress ipAddress)
         {
             try
             {
@@ -67,7 +71,7 @@ namespace GeolocationAPI.Controllers
                     return BadRequest($"Not found geolocation data for IpAddress {ipAddress.Value}");
                 }
                 var localGeolocationData = await _geolocationService.AddAsync(remoteGeolocationData);
-                return CreatedAtAction(nameof(Get), new {localGeolocationData.IpAddress}, localGeolocationData);
+                return CreatedAtAction(nameof(Get), new {localGeolocationData.IpAddress}, _geolocationDataConverter.Convert(localGeolocationData));
             }
             catch (RemoteApiException ex)
             {

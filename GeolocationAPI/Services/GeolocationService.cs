@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GeolocationAPI.Converters.Interfaces;
-using GeolocationAPI.DTO.Remote;
+using GeolocationAPI.DTO;
 using GeolocationAPI.Exceptions;
 using GeolocationAPI.Persistence.Entities;
 using GeolocationAPI.Persistence.Repositories.Interfaces;

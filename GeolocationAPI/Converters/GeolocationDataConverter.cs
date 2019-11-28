@@ -1,7 +1,7 @@
 ﻿using System;
 using AutoMapper;
 using GeolocationAPI.Converters.Interfaces;
-using GeolocationAPI.DTO.Remote;
+using GeolocationAPI.DTO;
 using GeolocationAPI.Persistence.Entities;
 
 namespace GeolocationAPI.Converters
@@ -12,13 +12,22 @@ namespace GeolocationAPI.Converters
 
         public GeolocationDataConverter()
         {
-            var mapperConfig = new MapperConfiguration(cfg => { cfg.CreateMap<RemoteGeolocationData, GeolocationData>(); });
+            var mapperConfig = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<RemoteGeolocationData, GeolocationData>();
+                cfg.CreateMap<GeolocationData, GeolocationDataResource>();
+            });
             _mapper = mapperConfig.CreateMapper();
         }
 
         public GeolocationData Convert(RemoteGeolocationData remoteGeolocationData)
         {
             return _mapper.Map<GeolocationData>(remoteGeolocationData);
+        }
+
+        public GeolocationDataResource Convert(GeolocationData localGeolocationData)
+        {
+            return _mapper.Map<GeolocationDataResource>(localGeolocationData);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using RestSharp.Deserializers;
 
-namespace GeolocationAPI.DTO.Remote
+namespace GeolocationAPI.DTO
 {
     public class RemoteGeolocationData 
     {
