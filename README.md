@@ -1,6 +1,8 @@
 # GeolocationAPI
 Sample REST API created for the purpose of recruitment task. Application is able to store geolocation data in the database, based on provided IP address or URL.
 
+<a href="https://geolocationapi20201205100852.azurewebsites.net/swagger/">View Demo</a>
+
 ## Built With
 
 * [IPStack](https://ipstack.com/) - API providing geolocation data

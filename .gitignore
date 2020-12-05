@@ -38,3 +38,8 @@ msbuild.wrn
 Reflect.IT/config
 Reflect.IT/localdata
 Reflect.IT/pass
+
+*.[Pp]ublish.xml
+*.azurePubxml
+*.pubxml
+*.publishproj
