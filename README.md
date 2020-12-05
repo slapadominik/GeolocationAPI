@@ -1,7 +1,7 @@
 # GeolocationAPI
 Sample REST API created for the purpose of recruitment task. Application is able to store geolocation data in the database, based on provided IP address or URL.
 
-<a href="https://geolocationapi20201205100852.azurewebsites.net/swagger/">View Demo</a>
+<a target="_blank" href="https://geolocationapi20201205100852.azurewebsites.net/swagger/">View Demo</a>
 
 ## Built With
 
